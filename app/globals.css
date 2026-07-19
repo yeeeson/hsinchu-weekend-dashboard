@@ -281,11 +281,11 @@ a {
 .node-2 { left: 35%; top: 60%; }
 .node-3 { left: 7%; top: 28%; }
 .node-4 { right: 12%; top: 25%; }
-.node-5 { right: 10%; bottom: 18%; }
+.node-5 { right: 24%; bottom: 19%; }
 .node-6 { right: 28%; bottom: 8%; }
 .node-7 { left: 52%; top: 39%; }
 .node-8 { right: 3%; top: 51%; }
-.node-9 { left: 9%; bottom: 17%; }
+.node-9 { left: 22%; bottom: 17%; }
 .node-10 { left: 27%; top: 17%; }
 
 .compass {
@@ -855,9 +855,9 @@ footer > a { font-size: 12px; text-decoration: none; }
   .map-node strong { display: none; }
   .node-3 { left: 10%; }
   .node-4 { right: 8%; }
-  .node-5 { right: 6%; }
+  .node-5 { right: 35%; bottom: 20%; }
   .node-8 { right: 2%; }
-  .node-9 { left: 5%; }
+  .node-9 { left: 27%; bottom: 12%; }
   .node-10 { left: 24%; }
   .map-caption { font-size: 17px; }
   .section-heading { align-items: start; flex-direction: column; }
