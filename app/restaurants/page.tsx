@@ -6,16 +6,16 @@ import {
   filterRestaurants,
   restaurantCategories,
   restaurantMeals,
+  restaurantPriceTiers,
   restaurantRegions,
   restaurants,
   restaurantTagLabels,
 } from "@/lib/restaurant-planner.mjs";
 
-type Region = "all" | "city" | "zhubei" | "zhudong";
-type Category = "all" | "japanese" | "chinese" | "snack" | "late" | "hotpot";
+type Region = "all" | "city" | "zhubei" | "zhudong" | "guanpu";
+type Category = "all" | "japanese" | "chinese" | "snack" | "late" | "hotpot" | "thai" | "indian";
 type Meal = "all" | "lunch" | "dinner" | "late";
-
-const budgetOptions = [200, 500, 1000];
+type PriceTier = "all" | "value" | "mid" | "premium";
 
 function money(value: number) {
   return `NT$${value.toLocaleString("zh-TW")}`;
@@ -25,19 +25,19 @@ export default function RestaurantsPage() {
   const [region, setRegion] = useState<Region>("all");
   const [category, setCategory] = useState<Category>("all");
   const [meal, setMeal] = useState<Meal>("all");
-  const [budget, setBudget] = useState(1000);
+  const [priceTier, setPriceTier] = useState<PriceTier>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const visibleRestaurants = useMemo(
-    () => filterRestaurants(restaurants, { region, category, meal, budget }),
-    [region, category, meal, budget],
+    () => filterRestaurants(restaurants, { region, category, meal, priceTier }),
+    [region, category, meal, priceTier],
   );
 
   const resetFilters = () => {
     setRegion("all");
     setCategory("all");
     setMeal("all");
-    setBudget(1000);
+    setPriceTier("all");
     setSelectedId(null);
   };
 
@@ -76,9 +76,9 @@ export default function RestaurantsPage() {
         </div>
         <div className="restaurant-stats" aria-label="餐廳資料摘要">
           <div><strong>{restaurants.length}</strong><span>間餐廳</span></div>
-          <div><strong>03</strong><span>個常用地區</span></div>
-          <div><strong>05</strong><span>種料理方向</span></div>
-          <p>目前鎖定新竹市區、竹北與竹東；價位為每人概估，出發前仍建議查看店家最新公告。</p>
+          <div><strong>{String(restaurantRegions.length - 1).padStart(2, "0")}</strong><span>個常用地區</span></div>
+          <div><strong>{String(restaurantPriceTiers.length - 1).padStart(2, "0")}</strong><span>段價位帶</span></div>
+          <p>新增關埔社區、關新路與科學園區周邊；價位為每人概估，評分為查核當下的第三方平台快照。</p>
         </div>
       </section>
 
@@ -127,17 +127,17 @@ export default function RestaurantsPage() {
           </fieldset>
 
           <fieldset className="restaurant-choice-group">
-            <legend>每人預算上限</legend>
-            <div className="choice-row three-up">
-              {budgetOptions.map((option) => (
+            <legend>每人價位帶</legend>
+            <div className="choice-row">
+              {restaurantPriceTiers.map((option) => (
                 <button
-                  key={option}
+                  key={option.id}
                   type="button"
-                  className={budget === option ? "selected" : ""}
-                  aria-pressed={budget === option}
-                  onClick={() => { setBudget(option); setSelectedId(null); }}
+                  className={priceTier === option.id ? "selected" : ""}
+                  aria-pressed={priceTier === option.id}
+                  onClick={() => { setPriceTier(option.id as PriceTier); setSelectedId(null); }}
                 >
-                  {money(option)}
+                  {option.label}
                 </button>
               ))}
             </div>
@@ -193,6 +193,11 @@ export default function RestaurantsPage() {
                   </div>
                   <h3>{restaurant.name}</h3>
                   <p className="restaurant-signature">{restaurant.signature}</p>
+                  {restaurant.reviewLabel && restaurant.reviewUrl ? (
+                    <a className="restaurant-review" href={restaurant.reviewUrl} target="_blank" rel="noreferrer">
+                      <span aria-hidden="true">★</span>{restaurant.reviewLabel}
+                    </a>
+                  ) : null}
                   <p className="restaurant-hours"><b>營業時間</b>{restaurant.hours}</p>
                   <p className="restaurant-note">{restaurant.note}</p>
                 </div>
@@ -212,7 +217,7 @@ export default function RestaurantsPage() {
           <div className="empty-state restaurant-empty">
             <span>○</span>
             <h3>這組條件目前沒有店家</h3>
-            <p>提高預算或放寬地區、類型，就會重新出現選項。</p>
+            <p>換一個價位帶，或放寬地區、料理類型，就會重新出現選項。</p>
             <button className="primary-button" type="button" onClick={resetFilters}>顯示全部餐廳</button>
           </div>
         )}
@@ -221,7 +226,7 @@ export default function RestaurantsPage() {
       <aside className="restaurant-data-note">
         <p className="eyebrow">BEFORE YOU GO</p>
         <h2>營業時間會變，出發前再看一次</h2>
-        <p>這份儀表板是決策起點，不是訂位系統。連假、包場、售完與臨時公休不一定能提前反映；卡片內保留來源與地圖，最後一步可以直接核對。</p>
+        <p>這份儀表板是決策起點，不是訂位系統。評分來自不同平台，樣本數與更新時間不完全相同；連假、包場、售完與臨時公休也可能變動，出發前請再查看卡片來源。</p>
       </aside>
 
       <footer>

@@ -7,11 +7,11 @@ import {
   restaurants,
 } from "../lib/restaurant-planner.mjs";
 
-test("restaurant catalog keeps all three areas aligned at five entries each", () => {
-  assert.equal(restaurants.length, 15);
+test("restaurant catalog keeps the original areas and adds a complete Guanpu catalog", () => {
+  assert.equal(restaurants.length, 23);
   assert.deepEqual(
     Object.fromEntries(restaurantRegions.slice(1).map(({ id }) => [id, restaurants.filter((item) => item.region === id).length])),
-    { city: 5, zhubei: 5, zhudong: 5 },
+    { city: 5, zhubei: 5, zhudong: 5, guanpu: 8 },
   );
   assert.equal(new Set(restaurants.map(({ id }) => id)).size, restaurants.length, "restaurant ids must be unique");
 });
@@ -21,7 +21,9 @@ test("every restaurant card has decision, transport, source, and map fields", ()
     for (const field of ["name", "regionLabel", "hours", "address", "signature", "note", "parking", "sourceLabel"]) {
       assert.ok(restaurant[field], `${restaurant.id} is missing ${field}`);
     }
-    assert.ok(restaurant.budget > 0 && restaurant.budget <= 1000, `${restaurant.id} has an invalid budget`);
+    assert.ok(restaurant.budget > 0, `${restaurant.id} has an invalid budget`);
+    const expectedTier = restaurant.budget <= 200 ? "value" : restaurant.budget <= 500 ? "mid" : "premium";
+    assert.equal(restaurant.priceTier, expectedTier, `${restaurant.id} is in the wrong price tier`);
     assert.ok(restaurant.tags.length > 0, `${restaurant.id} needs at least one category`);
     assert.ok(restaurant.meals.length > 0, `${restaurant.id} needs at least one meal period`);
     assert.equal(new URL(restaurant.sourceUrl).protocol, "https:");
@@ -32,8 +34,8 @@ test("every restaurant card has decision, transport, source, and map fields", ()
   }
 });
 
-test("requested cuisine categories are represented", () => {
-  const requested = ["japanese", "chinese", "snack", "late"];
+test("requested and new cuisine categories are represented", () => {
+  const requested = ["japanese", "chinese", "snack", "late", "thai", "indian"];
   const defined = new Set(restaurantCategories.map(({ id }) => id));
   const represented = new Set(restaurants.flatMap(({ tags }) => tags));
 
@@ -43,19 +45,32 @@ test("requested cuisine categories are represented", () => {
   }
 });
 
+test("Guanpu offers two or three reviewed choices in every price tier", () => {
+  const guanpuRestaurants = restaurants.filter(({ region }) => region === "guanpu");
+  const counts = Object.fromEntries(
+    ["value", "mid", "premium"].map((tier) => [tier, guanpuRestaurants.filter(({ priceTier }) => priceTier === tier).length]),
+  );
+
+  assert.deepEqual(counts, { value: 2, mid: 3, premium: 3 });
+  for (const restaurant of guanpuRestaurants) {
+    assert.ok(restaurant.reviewLabel, `${restaurant.id} needs a review snapshot`);
+    assert.equal(new URL(restaurant.reviewUrl).protocol, "https:");
+  }
+});
+
 test("combined restaurant filters return only matching entries", () => {
   const cityLateJapanese = filterRestaurants(restaurants, {
     region: "city",
     category: "japanese",
     meal: "late",
-    budget: 700,
+    priceTier: "premium",
   });
   assert.deepEqual(cityLateJapanese.map(({ id }) => id), ["city-sishi-skewers"]);
 
   const zhudongSnacks = filterRestaurants(restaurants, {
     region: "zhudong",
     category: "snack",
-    budget: 200,
+    priceTier: "value",
   });
   assert.deepEqual(
     zhudongSnacks.map(({ id }) => id),
@@ -63,4 +78,8 @@ test("combined restaurant filters return only matching entries", () => {
   );
 
   assert.equal(filterRestaurants(restaurants, { region: "zhudong", category: "japanese" }).length, 0);
+  assert.deepEqual(
+    filterRestaurants(restaurants, { region: "guanpu", category: "indian", priceTier: "premium" }).map(({ id }) => id),
+    ["guanpu-chillies"],
+  );
 });
