@@ -37,7 +37,7 @@ test("the generated restaurant page renders the full catalog and home navigation
   ]);
   const restaurantCards = restaurantHtml.match(/class="restaurant-card(?:\s[^\"]*)?"/g) ?? [];
 
-  assert.equal(restaurantCards.length, 23, "the default restaurant page must render the complete catalog");
+  assert.equal(restaurantCards.length, 38, "the default restaurant page must render the complete catalog");
   assert.match(homeHtml, /href="\/hsinchu-weekend-dashboard\/restaurants\/"/);
   assert.match(restaurantHtml, /今天，/);
   assert.match(restaurantHtml, /新竹市區/);
@@ -45,7 +45,7 @@ test("the generated restaurant page renders the full catalog and home navigation
   assert.match(restaurantHtml, /竹東/);
   assert.match(restaurantHtml, /關埔・園區/);
   assert.match(restaurantHtml, /日式/);
-  assert.match(restaurantHtml, /小吃/);
+  assert.match(restaurantHtml, /台式・小吃/);
   assert.match(restaurantHtml, /宵夜/);
   assert.match(restaurantHtml, /廟口鴨香飯/);
   assert.match(restaurantHtml, /十一街麵食館/);
@@ -53,6 +53,10 @@ test("the generated restaurant page renders the full catalog and home navigation
   assert.match(restaurantHtml, /墨竹亭/);
   assert.match(restaurantHtml, /淇里思印度餐廳/);
   assert.match(restaurantHtml, /老爺鐵板燒/);
+  assert.match(restaurantHtml, /六扇門時尚湯鍋/);
+  assert.match(restaurantHtml, /饗泰多/);
+  assert.match(restaurantHtml, /鼎泰豐/);
+  assert.match(restaurantHtml, /<strong>21<\/strong><span>組合全覆蓋<\/span>/);
   assert.match(restaurantHtml, /NT\$501 以上/);
   assert.match(restaurantHtml, /restaurant-review/);
   assert.match(restaurantHtml, /營業時間/);

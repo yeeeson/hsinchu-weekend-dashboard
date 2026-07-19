@@ -77,8 +77,8 @@ export default function RestaurantsPage() {
         <div className="restaurant-stats" aria-label="餐廳資料摘要">
           <div><strong>{restaurants.length}</strong><span>間餐廳</span></div>
           <div><strong>{String(restaurantRegions.length - 1).padStart(2, "0")}</strong><span>個常用地區</span></div>
-          <div><strong>{String(restaurantPriceTiers.length - 1).padStart(2, "0")}</strong><span>段價位帶</span></div>
-          <p>新增關埔社區、關新路與科學園區周邊；價位為每人概估，評分為查核當下的第三方平台快照。</p>
+          <div><strong>21</strong><span>組合全覆蓋</span></div>
+          <p>每個料理類型 × 每段價位帶至少 2 間；價位為每人概估，評分為查核當下的第三方平台快照。</p>
         </div>
       </section>
 

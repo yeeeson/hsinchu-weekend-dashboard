@@ -7,11 +7,11 @@ import {
   restaurants,
 } from "../lib/restaurant-planner.mjs";
 
-test("restaurant catalog keeps the original areas and adds a complete Guanpu catalog", () => {
-  assert.equal(restaurants.length, 23);
+test("restaurant catalog keeps every target area and expands the complete catalog", () => {
+  assert.equal(restaurants.length, 38);
   assert.deepEqual(
     Object.fromEntries(restaurantRegions.slice(1).map(({ id }) => [id, restaurants.filter((item) => item.region === id).length])),
-    { city: 5, zhubei: 5, zhudong: 5, guanpu: 8 },
+    { city: 17, zhubei: 8, zhudong: 5, guanpu: 8 },
   );
   assert.equal(new Set(restaurants.map(({ id }) => id)).size, restaurants.length, "restaurant ids must be unique");
 });
@@ -42,6 +42,23 @@ test("requested and new cuisine categories are represented", () => {
   for (const category of requested) {
     assert.ok(defined.has(category), `${category} filter is not defined`);
     assert.ok(represented.has(category), `${category} has no restaurant`);
+  }
+});
+
+test("every cuisine and price-tier combination keeps at least two choices", () => {
+  const categories = restaurantCategories.filter(({ id }) => id !== "all");
+  const priceTiers = ["value", "mid", "premium"];
+
+  for (const category of categories) {
+    for (const priceTier of priceTiers) {
+      const matches = filterRestaurants(restaurants, { category: category.id, priceTier });
+      assert.ok(
+        matches.length >= 2,
+        `${category.label} × ${priceTier} only has ${matches.length} restaurant(s)`,
+      );
+      assert.ok(matches.every(({ tags }) => tags.includes(category.id)));
+      assert.ok(matches.every((restaurant) => restaurant.priceTier === priceTier));
+    }
   }
 });
 
