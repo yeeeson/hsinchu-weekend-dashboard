@@ -28,7 +28,7 @@ type RoutePlan = {
     scooter: number;
   };
   transport: Record<Transport, string>;
-  stops: { time: string; name: string; note: string }[];
+  stops: { time: string; name: string; hours: string; note: string }[];
   sourceLabel: string;
   sourceUrl: string;
   mapUrl: string;
@@ -55,10 +55,10 @@ const routes: RoutePlan[] = [
       scooter: "市區機車格較分散，停好後步行最順；估油資與停車 NT$60／車。",
     },
     stops: [
-      { time: "13:00", name: "新竹火車站", note: "從百年車站開始，沿護城河進城。" },
-      { time: "13:25", name: "東門城與護城河", note: "城市散步的第一段，拍照也不太需要等。" },
-      { time: "14:10", name: "影像博物館／美術館", note: "依當日展演二選一，雨天可拉長停留。" },
-      { time: "16:00", name: "城隍廟與東門市場", note: "把主食、甜點和晚餐一次解決。" },
+      { time: "13:00", name: "新竹火車站", hours: "每日 06:00–24:00", note: "從百年車站開始，沿護城河進城。" },
+      { time: "13:25", name: "東門城與護城河", hours: "戶外開放空間", note: "城市散步的第一段，拍照也不太需要等。" },
+      { time: "14:10", name: "影像博物館／美術館", hours: "週二至週日｜影博 09:30–21:00・美術館 09:00–17:00", note: "依當日展演二選一，雨天可拉長停留。" },
+      { time: "16:00", name: "城隍廟與東門市場", hours: "市場全天開放・店家各自營業", note: "把主食、甜點和晚餐一次解決。" },
     ],
     sourceLabel: "新竹市觀光旅遊網｜百年老城巡禮",
     sourceUrl: "https://tourism.hccg.gov.tw/",
@@ -84,10 +84,10 @@ const routes: RoutePlan[] = [
       scooter: "食品路周邊找合法機車格，估油資與停車 NT$60／車。",
     },
     stops: [
-      { time: "10:00", name: "新竹市立動物園", note: "全票 NT$50，週一休園，售票至 16:30。" },
-      { time: "12:00", name: "新竹公園午餐", note: "公園周邊選擇多，先避開午後人潮。" },
-      { time: "13:30", name: "玻璃工藝博物館", note: "全票 NT$50，週二至週日 09:00–17:00。" },
-      { time: "15:15", name: "麗池與湖畔料亭", note: "最後留一段沒有行程壓力的散步。" },
+      { time: "10:00", name: "新竹市立動物園", hours: "週二至週日 09:00–17:00", note: "全票 NT$50，週一休園，售票至 16:30。" },
+      { time: "12:00", name: "新竹公園午餐", hours: "依店家營業", note: "公園周邊選擇多，先避開午後人潮。" },
+      { time: "13:30", name: "玻璃工藝博物館", hours: "週二至週日 09:00–17:00", note: "全票 NT$50，週一休館。" },
+      { time: "15:15", name: "麗池與湖畔料亭", hours: "戶外開放空間", note: "最後留一段沒有行程壓力的散步。" },
     ],
     sourceLabel: "新竹市立動物園｜票價資訊",
     sourceUrl: "https://zoo-info.hccg.gov.tw/visit/price/",
@@ -113,10 +113,10 @@ const routes: RoutePlan[] = [
       scooter: "南寮旅服中心周邊停車，再租單車進海岸線；估 NT$80／車。",
     },
     stops: [
-      { time: "10:00", name: "南寮漁港", note: "先看風勢，再決定長程或短程騎法。" },
-      { time: "10:40", name: "魚鱗天梯", note: "短停拍照，不在無遮蔭處久留。" },
-      { time: "12:00", name: "港南運河", note: "補水與午餐，單車租金先抓約 NT$200。" },
-      { time: "15:30", name: "香山濕地周邊", note: "依潮汐與體力決定是否繼續，再原路折返。" },
+      { time: "10:00", name: "南寮漁港", hours: "戶外開放空間", note: "先看風勢，再決定長程或短程騎法。" },
+      { time: "10:40", name: "魚鱗天梯", hours: "戶外開放空間", note: "短停拍照，不在無遮蔭處久留。" },
+      { time: "12:00", name: "港南運河", hours: "戶外開放空間", note: "補水與午餐，單車租金先抓約 NT$200。" },
+      { time: "15:30", name: "香山濕地周邊", hours: "賞蟹步道 09:00–18:00", note: "依潮汐與體力決定是否繼續，再原路折返。" },
     ],
     sourceLabel: "新竹市政府｜17 公里海岸自行車道",
     sourceUrl: "https://dep-tourism.hccg.gov.tw/ch/home.jsp?dataserno=202308020009&id=16&mcustomize=municipalnews_view.jsp&mserno=201601300177&parentpath=&t=MunicipalNews&toolsflag=Y",
@@ -142,10 +142,10 @@ const routes: RoutePlan[] = [
       scooter: "台 3 線進山，午後注意天候；估油資與停車 NT$160／車。",
     },
     stops: [
-      { time: "09:00", name: "新竹車站", note: "先買內灣線一日週遊券，確認回程班次。" },
-      { time: "10:10", name: "合興車站", note: "保留 45–60 分鐘，不必每一站都停。" },
-      { time: "12:00", name: "內灣老街", note: "野薑花粽、客家菜包或粄條選兩樣就夠。" },
-      { time: "14:30", name: "內灣吊橋與林業展示館", note: "午後慢走，17:00 前回車站最安心。" },
+      { time: "09:00", name: "新竹車站", hours: "每日 06:00–24:00・列車依班次", note: "先買內灣線一日週遊券，確認回程班次。" },
+      { time: "10:10", name: "合興車站", hours: "戶外全天・店家依現場", note: "保留 45–60 分鐘，不必每一站都停。" },
+      { time: "12:00", name: "內灣老街", hours: "店家約 10:00–18:00", note: "野薑花粽、客家菜包或粄條選兩樣就夠。" },
+      { time: "14:30", name: "內灣吊橋與林業展示館", hours: "吊橋全天・館舍依公告", note: "午後慢走，17:00 前回車站最安心。" },
     ],
     sourceLabel: "臺鐵｜內灣線一日週遊券",
     sourceUrl: "https://tip.railway.gov.tw/tra-tip-web/tip/tip003/tip313/view10/sort?ticketSortNo=0002",
@@ -171,10 +171,10 @@ const routes: RoutePlan[] = [
       scooter: "台 3 線移動方便，午後山區可能有短暫陣雨；估 NT$140／車。",
     },
     stops: [
-      { time: "09:30", name: "北埔老街", note: "先看金廣福公館與慈天宮，再開始吃。" },
-      { time: "11:30", name: "客家午餐", note: "兩人同行較好點菜，預算抓每人 NT$320。" },
-      { time: "13:00", name: "擂茶體驗", note: "店家價格不同，先以每人約 NT$250 估算。" },
-      { time: "15:00", name: "峨眉湖／細茅埔吊橋", note: "搭同一路線續行，留意最後回程班次。" },
+      { time: "09:30", name: "北埔老街", hours: "平日 09:30–17:30・週末 08:00–18:00", note: "先看金廣福公館與慈天宮，再開始吃。" },
+      { time: "11:30", name: "客家午餐", hours: "依店家營業", note: "兩人同行較好點菜，預算抓每人 NT$320。" },
+      { time: "13:00", name: "擂茶體驗", hours: "依店家預約", note: "店家價格不同，先以每人約 NT$250 估算。" },
+      { time: "15:00", name: "峨眉湖／細茅埔吊橋", hours: "戶外開放空間", note: "搭同一路線續行，留意最後回程班次。" },
     ],
     sourceLabel: "台灣好行｜5700 獅山線時刻與票價",
     sourceUrl: "https://beta.taiwantrip.tad.gov.tw/Route/Schedule?routeId=R0003",
@@ -200,10 +200,10 @@ const routes: RoutePlan[] = [
       scooter: "山路與園區坡度都較多，估油資 NT$140／車。",
     },
     stops: [
-      { time: "09:30", name: "售票口", note: "全票 NT$480，售票至 16:00。" },
-      { time: "10:00", name: "天鵝湖與鳥類區", note: "上午動物較活躍，先走戶外區。" },
-      { time: "12:00", name: "園區午餐", note: "避開正中午長距離爬坡。" },
-      { time: "14:00", name: "雨林空中步道", note: "慢慢走完，不再加塞北埔老街。" },
+      { time: "09:30", name: "售票口", hours: "08:30–17:30・售票至 16:00", note: "全票 NT$480，建議預留完整一天。" },
+      { time: "10:00", name: "天鵝湖與鳥類區", hours: "園區 08:30–17:30", note: "上午動物較活躍，先走戶外區。" },
+      { time: "12:00", name: "園區午餐", hours: "園區 08:30–17:30", note: "避開正中午長距離爬坡。" },
+      { time: "14:00", name: "雨林空中步道", hours: "園區 08:30–17:30", note: "慢慢走完，不再加塞北埔老街。" },
     ],
     sourceLabel: "綠世界生態農場｜最新票價",
     sourceUrl: "https://www.green-world.com.tw/ticket.php",
@@ -450,7 +450,10 @@ export default function Home() {
               <span className="timeline-time">{stop.time}</span>
               <span className="timeline-dot" aria-hidden="true">{index + 1}</span>
               <div>
-                <h3>{stop.name}</h3>
+                <div className="timeline-stop-heading">
+                  <h3>{stop.name}</h3>
+                  <span className="hours-badge">{stop.hours}</span>
+                </div>
                 <p>{stop.note}</p>
               </div>
             </div>

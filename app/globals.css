@@ -714,7 +714,27 @@ a {
   font-size: 10px;
 }
 
+.timeline-stop-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
 .timeline-stop h3 { font-size: 21px; }
+
+.hours-badge {
+  display: inline-flex;
+  padding: 4px 8px;
+  border: 1px solid color-mix(in srgb, var(--route-color) 35%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--route-color) 9%, var(--paper));
+  color: color-mix(in srgb, var(--route-color) 82%, var(--ink));
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
 .timeline-stop p { margin: 6px 0 0; color: var(--ink-soft); font-size: 12px; line-height: 1.6; }
 
 .trip-receipt {
