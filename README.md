@@ -1,31 +1,32 @@
-# vinext-starter
+# 週末風向｜新竹去哪玩
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+以預算、交通方式、天氣與時間篩選新竹週末路線的互動式儀表板。每條路線都包含景點營業時間、每人預算、交通建議、資料來源與 Google Maps 導航。
 
 ## Prerequisites
 
 - Node.js `>=22.13.0`
 
-## Quick Start
+## 本機開發
 
 ```bash
 npm install
 npm run dev
-npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+## 測試與發布門檻
 
-## Included Shape
+```bash
+npm run test:regression
+```
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+完整回歸測試會依序執行：
+
+1. 路線費用與篩選規則的單元測試。
+2. 圖譜、路線卡、編號、營業時間、預算、資料來源與導航連結的一致性測試。
+3. GitHub Pages 靜態建置。
+4. 建置後頁面的路線數量與關鍵內容測試。
+
+GitHub Pages 工作流程會在每次推送至 `main` 時先通過同一組回歸測試，成功後才發布。
 
 ## Workspace Auth Headers
 
@@ -85,14 +86,10 @@ or enforce explicit server-side membership or allowlist checks.
 Use SIWC for account pages, user-specific dashboards, saved records, and write
 actions tied to the current ChatGPT user. Leave public content anonymous.
 
-## Useful Commands
+## 常用指令
 
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+- `npm run dev`：啟動本機網站。
+- `npm test`：執行單元與資料一致性測試。
+- `npm run build:pages`：產生 GitHub Pages 靜態網站。
+- `npm run build`：驗證 OpenAI Sites 部署版本。
+- `npm run test:regression`：執行完整回歸測試。

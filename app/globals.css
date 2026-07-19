@@ -287,6 +287,10 @@ a {
 .node-8 { right: 3%; top: 51%; }
 .node-9 { left: 22%; bottom: 17%; }
 .node-10 { left: 27%; top: 17%; }
+.node-11 { left: 5%; top: 52%; }
+.node-12 { left: 43%; top: 20%; }
+.node-13 { right: 5%; top: 67%; flex-direction: row-reverse; }
+.node-14 { left: 43%; bottom: 8%; }
 
 .compass {
   position: absolute;
@@ -859,6 +863,10 @@ footer > a { font-size: 12px; text-decoration: none; }
   .node-8 { right: 2%; }
   .node-9 { left: 27%; bottom: 12%; }
   .node-10 { left: 24%; }
+  .node-11 { left: 4%; top: 55%; }
+  .node-12 { left: 50%; top: 18%; }
+  .node-13 { right: 4%; top: 66%; }
+  .node-14 { left: 48%; bottom: 6%; }
   .map-caption { font-size: 17px; }
   .section-heading { align-items: start; flex-direction: column; }
   .filter-grid { grid-template-columns: 1fr; }

@@ -63,12 +63,18 @@ test("dashboard route data and both route views stay in sync", async () => {
   const costs = [...routeData.matchAll(
     /costs:\s*\{\s*ticket:\s*(\d+),\s*food:\s*(\d+),\s*activity:\s*(\d+),\s*public:\s*(\d+),\s*car:\s*(\d+),\s*scooter:\s*(\d+)\s*\}/g,
   )];
+  const sourceUrls = [...routeData.matchAll(/sourceUrl:\s*"([^"]+)"/g)].map((match) => match[1]);
+  const mapUrls = [...routeData.matchAll(/mapUrl:\s*"([^"]+)"/g)].map((match) => match[1]);
 
   assert.ok(ids.length >= 10, "expected the full Hsinchu route catalog");
   assert.equal(new Set(ids).size, ids.length, "route ids must be unique");
   assert.deepEqual(numbers, Array.from({ length: ids.length }, (_, index) => index + 1));
   assert.equal(stopCount, hoursCount, "every stop must include opening-hours information");
   assert.equal(costs.length, ids.length, "every route must include a complete cost record");
+  assert.equal(sourceUrls.length, ids.length, "every route must include one source URL");
+  assert.equal(mapUrls.length, ids.length, "every route must include one map URL");
+  assert.ok(sourceUrls.every((url) => url.startsWith("https://")), "route sources must use HTTPS");
+  assert.ok(mapUrls.every((url) => url.startsWith("https://www.google.com/maps/dir/")), "every route must include Google Maps directions");
 
   for (const [index, cost] of costs.entries()) {
     const [, ticket, food, activity, publicFare] = cost.map(Number);
