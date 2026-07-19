@@ -1,0 +1,502 @@
+"use client";
+
+import { useMemo, useState } from "react";
+
+type Transport = "public" | "car" | "scooter";
+type Weather = "any" | "sunny" | "rain";
+type Pace = "any" | "half" | "full";
+
+type RoutePlan = {
+  id: string;
+  number: string;
+  title: string;
+  region: string;
+  kicker: string;
+  summary: string;
+  duration: string;
+  pace: Exclude<Pace, "any">;
+  distance: string;
+  weather: Exclude<Weather, "any">[];
+  moods: string[];
+  color: string;
+  costs: {
+    ticket: number;
+    food: number;
+    activity: number;
+    public: number;
+    car: number;
+    scooter: number;
+  };
+  transport: Record<Transport, string>;
+  stops: { time: string; name: string; note: string }[];
+  sourceLabel: string;
+  sourceUrl: string;
+  mapUrl: string;
+};
+
+const routes: RoutePlan[] = [
+  {
+    id: "old-town",
+    number: "01",
+    title: "舊城散步與小吃",
+    region: "新竹市區",
+    kicker: "低門檻・雨天也能走",
+    summary: "從火車站一路走進老城，把古蹟、電影與城隍廟小吃排成一條不用趕車的午後路線。",
+    duration: "4–5 小時",
+    pace: "half",
+    distance: "步行約 3.2 km",
+    weather: ["sunny", "rain"],
+    moods: ["文化", "美食", "輕鬆"],
+    color: "#d96d4b",
+    costs: { ticket: 30, food: 320, activity: 0, public: 30, car: 160, scooter: 60 },
+    transport: {
+      public: "新竹火車站出發，全程步行；市區公車預留 NT$30。",
+      car: "建議停火車站或府後街停車場，再改步行；估 NT$160／車。",
+      scooter: "市區機車格較分散，停好後步行最順；估油資與停車 NT$60／車。",
+    },
+    stops: [
+      { time: "13:00", name: "新竹火車站", note: "從百年車站開始，沿護城河進城。" },
+      { time: "13:25", name: "東門城與護城河", note: "城市散步的第一段，拍照也不太需要等。" },
+      { time: "14:10", name: "影像博物館／美術館", note: "依當日展演二選一，雨天可拉長停留。" },
+      { time: "16:00", name: "城隍廟與東門市場", note: "把主食、甜點和晚餐一次解決。" },
+    ],
+    sourceLabel: "新竹市觀光旅遊網｜百年老城巡禮",
+    sourceUrl: "https://tourism.hccg.gov.tw/",
+    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=新竹火車站&destination=新竹都城隍廟&waypoints=迎曦門%7C新竹市影像博物館",
+  },
+  {
+    id: "park-glass",
+    number: "02",
+    title: "動物園與玻璃之城",
+    region: "新竹公園",
+    kicker: "經典・親子也適合",
+    summary: "動物園、麗池與玻璃工藝博物館都在同一座公園，用一個下午認識最有代表性的新竹。",
+    duration: "5–6 小時",
+    pace: "half",
+    distance: "步行約 2.6 km",
+    weather: ["sunny", "rain"],
+    moods: ["文化", "生態", "輕鬆"],
+    color: "#4f8a72",
+    costs: { ticket: 100, food: 280, activity: 0, public: 30, car: 180, scooter: 60 },
+    transport: {
+      public: "新竹火車站步行約 18 分鐘，或搭市區公車；預留 NT$30。",
+      car: "新竹公園周邊停車假日較滿，估停車 NT$180／車。",
+      scooter: "食品路周邊找合法機車格，估油資與停車 NT$60／車。",
+    },
+    stops: [
+      { time: "10:00", name: "新竹市立動物園", note: "全票 NT$50，週一休園，售票至 16:30。" },
+      { time: "12:00", name: "新竹公園午餐", note: "公園周邊選擇多，先避開午後人潮。" },
+      { time: "13:30", name: "玻璃工藝博物館", note: "全票 NT$50，週二至週日 09:00–17:00。" },
+      { time: "15:15", name: "麗池與湖畔料亭", note: "最後留一段沒有行程壓力的散步。" },
+    ],
+    sourceLabel: "新竹市立動物園｜票價資訊",
+    sourceUrl: "https://zoo-info.hccg.gov.tw/visit/price/",
+    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=新竹火車站&destination=新竹市玻璃工藝博物館&waypoints=新竹市立動物園%7C麗池公園",
+  },
+  {
+    id: "coast",
+    number: "03",
+    title: "南寮追風單車線",
+    region: "17 公里海岸",
+    kicker: "看海・把腦袋吹空",
+    summary: "從漁港一路騎到香山濕地，風大就縮短、夕陽好就多留，是最適合臨時出發的戶外方案。",
+    duration: "6–8 小時",
+    pace: "full",
+    distance: "單車 12–24 km",
+    weather: ["sunny"],
+    moods: ["海邊", "運動", "放空"],
+    color: "#4c91a8",
+    costs: { ticket: 0, food: 320, activity: 200, public: 30, car: 220, scooter: 80 },
+    transport: {
+      public: "新竹火車站搭藍線／藍 15 區往南寮，單程每段全票 NT$15。",
+      car: "漁港周邊停車後租車折返，估油資與停車 NT$220／車。",
+      scooter: "南寮旅服中心周邊停車，再租單車進海岸線；估 NT$80／車。",
+    },
+    stops: [
+      { time: "10:00", name: "南寮漁港", note: "先看風勢，再決定長程或短程騎法。" },
+      { time: "10:40", name: "魚鱗天梯", note: "短停拍照，不在無遮蔭處久留。" },
+      { time: "12:00", name: "港南運河", note: "補水與午餐，單車租金先抓約 NT$200。" },
+      { time: "15:30", name: "香山濕地周邊", note: "依潮汐與體力決定是否繼續，再原路折返。" },
+    ],
+    sourceLabel: "新竹市政府｜17 公里海岸自行車道",
+    sourceUrl: "https://dep-tourism.hccg.gov.tw/ch/home.jsp?dataserno=202308020009&id=16&mcustomize=municipalnews_view.jsp&mserno=201601300177&parentpath=&t=MunicipalNews&toolsflag=Y",
+    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=南寮漁港&destination=香山濕地&travelmode=bicycling&waypoints=魚鱗天梯%7C港南運河",
+  },
+  {
+    id: "neiwan",
+    number: "04",
+    title: "內灣鐵道慢旅行",
+    region: "橫山・內灣",
+    kicker: "不開車・山城感最完整",
+    summary: "搭支線把移動本身變成行程，串連合興車站、內灣老街與吊橋，適合一個人也適合兩人。",
+    duration: "7–9 小時",
+    pace: "full",
+    distance: "步行約 5 km",
+    weather: ["sunny"],
+    moods: ["鐵道", "美食", "山城"],
+    color: "#b7854a",
+    costs: { ticket: 0, food: 350, activity: 0, public: 95, car: 320, scooter: 160 },
+    transport: {
+      public: "新竹站搭內灣線；一日週遊券全票 NT$95，可沿線彈性下車。",
+      car: "假日內灣易塞，建議早到或停外圍；估油資與停車 NT$320／車。",
+      scooter: "台 3 線進山，午後注意天候；估油資與停車 NT$160／車。",
+    },
+    stops: [
+      { time: "09:00", name: "新竹車站", note: "先買內灣線一日週遊券，確認回程班次。" },
+      { time: "10:10", name: "合興車站", note: "保留 45–60 分鐘，不必每一站都停。" },
+      { time: "12:00", name: "內灣老街", note: "野薑花粽、客家菜包或粄條選兩樣就夠。" },
+      { time: "14:30", name: "內灣吊橋與林業展示館", note: "午後慢走，17:00 前回車站最安心。" },
+    ],
+    sourceLabel: "臺鐵｜內灣線一日週遊券",
+    sourceUrl: "https://tip.railway.gov.tw/tra-tip-web/tip/tip003/tip313/view10/sort?ticketSortNo=0002",
+    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=內灣車站&destination=內灣吊橋&waypoints=內灣老街%7C內灣林業展示館&travelmode=walking",
+  },
+  {
+    id: "beipu",
+    number: "05",
+    title: "北埔茶香小旅行",
+    region: "北埔・峨眉",
+    kicker: "客庄・吃得比走得多",
+    summary: "老街不只吃粄條，留一段時間做擂茶，再搭車去峨眉湖看水色，行程會完整很多。",
+    duration: "7–8 小時",
+    pace: "full",
+    distance: "步行約 4.5 km",
+    weather: ["sunny"],
+    moods: ["客庄", "美食", "湖景"],
+    color: "#7d7b3f",
+    costs: { ticket: 0, food: 320, activity: 250, public: 100, car: 300, scooter: 140 },
+    transport: {
+      public: "竹北／高鐵新竹站搭台灣好行 5700 獅山線，一日券 NT$100。",
+      car: "北埔外圍停車後步行進老街，再開往峨眉；估 NT$300／車。",
+      scooter: "台 3 線移動方便，午後山區可能有短暫陣雨；估 NT$140／車。",
+    },
+    stops: [
+      { time: "09:30", name: "北埔老街", note: "先看金廣福公館與慈天宮，再開始吃。" },
+      { time: "11:30", name: "客家午餐", note: "兩人同行較好點菜，預算抓每人 NT$320。" },
+      { time: "13:00", name: "擂茶體驗", note: "店家價格不同，先以每人約 NT$250 估算。" },
+      { time: "15:00", name: "峨眉湖／細茅埔吊橋", note: "搭同一路線續行，留意最後回程班次。" },
+    ],
+    sourceLabel: "台灣好行｜5700 獅山線時刻與票價",
+    sourceUrl: "https://beta.taiwantrip.tad.gov.tw/Route/Schedule?routeId=R0003",
+    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=北埔老街&destination=細茅埔吊橋&waypoints=慈天宮%7C峨眉湖",
+  },
+  {
+    id: "green-world",
+    number: "06",
+    title: "綠世界放空日",
+    region: "北埔",
+    kicker: "整天待一站・最省腦力",
+    summary: "不排行程接力，只選一個夠大的目的地。適合想看動物、走路，但不想一直決定下一站的人。",
+    duration: "7–8 小時",
+    pace: "full",
+    distance: "園區步行 5–7 km",
+    weather: ["sunny"],
+    moods: ["生態", "散步", "省腦"],
+    color: "#3f7657",
+    costs: { ticket: 480, food: 280, activity: 0, public: 100, car: 300, scooter: 140 },
+    transport: {
+      public: "搭台灣好行 5700 獅山線至綠世界站，一日券 NT$100。",
+      car: "國道 3 號竹林交流道下，估油資與停車 NT$300／車。",
+      scooter: "山路與園區坡度都較多，估油資 NT$140／車。",
+    },
+    stops: [
+      { time: "09:30", name: "售票口", note: "全票 NT$480，售票至 16:00。" },
+      { time: "10:00", name: "天鵝湖與鳥類區", note: "上午動物較活躍，先走戶外區。" },
+      { time: "12:00", name: "園區午餐", note: "避開正中午長距離爬坡。" },
+      { time: "14:00", name: "雨林空中步道", note: "慢慢走完，不再加塞北埔老街。" },
+    ],
+    sourceLabel: "綠世界生態農場｜最新票價",
+    sourceUrl: "https://www.green-world.com.tw/ticket.php",
+    mapUrl: "https://www.google.com/maps/dir/?api=1&destination=綠世界生態農場",
+  },
+];
+
+const transportLabels: Record<Transport, string> = {
+  public: "大眾運輸",
+  car: "開車",
+  scooter: "機車",
+};
+
+function routeCost(route: RoutePlan, transport: Transport, travelers: number) {
+  const shared = transport === "public" ? route.costs.public : Math.ceil(route.costs[transport] / travelers);
+  return route.costs.ticket + route.costs.food + route.costs.activity + shared;
+}
+
+function money(value: number) {
+  return `NT$${value.toLocaleString("zh-TW")}`;
+}
+
+export default function Home() {
+  const [transport, setTransport] = useState<Transport>("public");
+  const [budget, setBudget] = useState(700);
+  const [weather, setWeather] = useState<Weather>("any");
+  const [pace, setPace] = useState<Pace>("any");
+  const [travelers, setTravelers] = useState(2);
+  const [selectedId, setSelectedId] = useState("neiwan");
+
+  const filtered = useMemo(
+    () =>
+      routes.filter((route) => {
+        const withinBudget = routeCost(route, transport, travelers) <= budget;
+        const weatherMatch = weather === "any" || route.weather.includes(weather);
+        const paceMatch = pace === "any" || route.pace === pace;
+        return withinBudget && weatherMatch && paceMatch;
+      }),
+    [transport, budget, weather, pace, travelers],
+  );
+
+  const selected = routes.find((route) => route.id === selectedId) ?? routes[0];
+  const selectedTotal = routeCost(selected, transport, travelers);
+  const selectedTransportCost =
+    transport === "public" ? selected.costs.public : Math.ceil(selected.costs[transport] / travelers);
+
+  function surpriseMe() {
+    const pool = filtered.length > 0 ? filtered : routes;
+    const next = pool[Math.floor(Math.random() * pool.length)];
+    setSelectedId(next.id);
+    document.getElementById("route-detail")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  return (
+    <main>
+      <header className="site-header">
+        <a className="brand" href="#top" aria-label="回到首頁">
+          <span className="brand-mark" aria-hidden="true">風</span>
+          <span>週末風向</span>
+        </a>
+        <div className="header-meta">
+          <span>HSINCHU · WEEKEND 01</span>
+          <span className="freshness"><i />資料查核 2026.07.19</span>
+        </div>
+      </header>
+
+      <section className="hero" id="top">
+        <div className="hero-copy">
+          <p className="eyebrow">不必先知道自己想去哪裡</p>
+          <h1>沿著風，<br />選一條路。</h1>
+          <p className="hero-lede">
+            從新竹出發的 6 種週末提案。先選預算與交通方式，再讓今天的體力替你做最後決定。
+          </p>
+          <button className="surprise-button" onClick={surpriseMe}>
+            <span aria-hidden="true">↗</span> 幫我挑一條
+          </button>
+        </div>
+
+        <div className="atlas" aria-label="新竹週末路線概念地圖">
+          <div className="terrain terrain-a" />
+          <div className="terrain terrain-b" />
+          <div className="water" />
+          <div className="road road-a" />
+          <div className="road road-b" />
+          <div className="road road-c" />
+          <span className="map-caption">風城週末圖譜</span>
+          {routes.map((route, index) => (
+            <button
+              key={route.id}
+              className={`map-node node-${index + 1} ${selectedId === route.id ? "active" : ""}`}
+              style={{ "--route-color": route.color } as React.CSSProperties}
+              onClick={() => setSelectedId(route.id)}
+              aria-label={`選擇${route.region}：${route.title}`}
+            >
+              <span>{route.number}</span>
+              <strong>{route.region}</strong>
+            </button>
+          ))}
+          <div className="compass" aria-hidden="true"><span>N</span></div>
+          <div className="atlas-note">
+            <span>BASE</span>
+            <strong>新竹市區</strong>
+          </div>
+        </div>
+      </section>
+
+      <section className="planner" aria-labelledby="planner-title">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">01 / 先說今天的條件</p>
+            <h2 id="planner-title">把選擇縮小一點</h2>
+          </div>
+          <p>{filtered.length} 條路線符合目前條件</p>
+        </div>
+
+        <div className="filter-grid">
+          <fieldset className="filter-group">
+            <legend>怎麼去？</legend>
+            <div className="segmented">
+              {(Object.keys(transportLabels) as Transport[]).map((item) => (
+                <button key={item} className={transport === item ? "selected" : ""} onClick={() => setTransport(item)}>
+                  {transportLabels[item]}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="filter-group">
+            <legend>每人預算</legend>
+            <div className="segmented">
+              {[500, 700, 1000].map((amount) => (
+                <button key={amount} className={budget === amount ? "selected" : ""} onClick={() => setBudget(amount)}>
+                  {amount === 1000 ? "NT$1,000 內" : `NT$${amount} 內`}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="filter-group compact-group">
+            <legend>天氣</legend>
+            <select value={weather} onChange={(event) => setWeather(event.target.value as Weather)} aria-label="選擇天氣條件">
+              <option value="any">都可以</option>
+              <option value="sunny">晴天優先</option>
+              <option value="rain">雨天也行</option>
+            </select>
+          </fieldset>
+
+          <fieldset className="filter-group compact-group">
+            <legend>時間</legend>
+            <select value={pace} onChange={(event) => setPace(event.target.value as Pace)} aria-label="選擇行程長度">
+              <option value="any">整天／半天</option>
+              <option value="half">半天</option>
+              <option value="full">一整天</option>
+            </select>
+          </fieldset>
+
+          <fieldset className="filter-group traveler-group">
+            <legend>同行人數</legend>
+            <div className="stepper">
+              <button onClick={() => setTravelers(Math.max(1, travelers - 1))} aria-label="減少同行人數">−</button>
+              <output aria-live="polite">{travelers} 人</output>
+              <button onClick={() => setTravelers(Math.min(6, travelers + 1))} aria-label="增加同行人數">＋</button>
+            </div>
+          </fieldset>
+        </div>
+        <p className="estimate-note">開車與機車費用會依同行人數分攤；餐飲與體驗皆為每人估算。</p>
+      </section>
+
+      <section className="route-section" aria-labelledby="routes-title">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">02 / 看哪條路順眼</p>
+            <h2 id="routes-title">週末路線</h2>
+          </div>
+          <p>點選卡片查看完整時間表</p>
+        </div>
+
+        {filtered.length > 0 ? (
+          <div className="route-grid">
+            {filtered.map((route) => {
+              const total = routeCost(route, transport, travelers);
+              return (
+                <button
+                  key={route.id}
+                  className={`route-card ${selectedId === route.id ? "active" : ""}`}
+                  onClick={() => setSelectedId(route.id)}
+                  style={{ "--route-color": route.color } as React.CSSProperties}
+                  aria-pressed={selectedId === route.id}
+                >
+                  <div className="route-card-top">
+                    <span className="route-number">{route.number}</span>
+                    <span className="route-region">{route.region}</span>
+                  </div>
+                  <div>
+                    <p className="route-kicker">{route.kicker}</p>
+                    <h3>{route.title}</h3>
+                    <p className="route-summary">{route.summary}</p>
+                  </div>
+                  <div className="route-tags">
+                    {route.moods.map((mood) => <span key={mood}>{mood}</span>)}
+                  </div>
+                  <div className="route-card-bottom">
+                    <span>{route.duration}</span>
+                    <strong>{money(total)}<small>／人</small></strong>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <span aria-hidden="true">↺</span>
+            <h3>條件有點太完美了</h3>
+            <p>把預算調高，或取消天氣與時間限制，就會有更多路線。</p>
+            <button onClick={() => { setBudget(1000); setWeather("any"); setPace("any"); }}>放寬條件</button>
+          </div>
+        )}
+      </section>
+
+      <section className="route-detail" id="route-detail" style={{ "--route-color": selected.color } as React.CSSProperties}>
+        <div className="detail-intro">
+          <p className="eyebrow">03 / 這條怎麼走</p>
+          <div className="detail-title-row">
+            <div>
+              <span className="detail-region">{selected.region}</span>
+              <h2>{selected.title}</h2>
+            </div>
+            <div className="detail-price">
+              <span>每人估算</span>
+              <strong>{money(selectedTotal)}</strong>
+            </div>
+          </div>
+          <p className="detail-summary">{selected.summary}</p>
+          <div className="detail-facts">
+            <span><b>時間</b>{selected.duration}</span>
+            <span><b>移動</b>{selected.distance}</span>
+            <span><b>適合</b>{selected.moods.join("・")}</span>
+          </div>
+        </div>
+
+        <div className="timeline" aria-label={`${selected.title}時間表`}>
+          {selected.stops.map((stop, index) => (
+            <div className="timeline-stop" key={`${selected.id}-${stop.time}`}>
+              <span className="timeline-time">{stop.time}</span>
+              <span className="timeline-dot" aria-hidden="true">{index + 1}</span>
+              <div>
+                <h3>{stop.name}</h3>
+                <p>{stop.note}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <aside className="trip-receipt" aria-label="行程費用與交通摘要">
+          <div className="receipt-heading">
+            <span>TRIP NOTE</span>
+            <strong>{selected.number}</strong>
+          </div>
+          <div className="transport-summary">
+            <span>{transportLabels[transport]}</span>
+            <p>{selected.transport[transport]}</p>
+          </div>
+          <dl className="cost-list">
+            <div><dt>交通</dt><dd>{money(selectedTransportCost)}</dd></div>
+            <div><dt>門票</dt><dd>{money(selected.costs.ticket)}</dd></div>
+            <div><dt>餐飲</dt><dd>{money(selected.costs.food)}</dd></div>
+            <div><dt>體驗</dt><dd>{money(selected.costs.activity)}</dd></div>
+            <div className="total"><dt>合計／人</dt><dd>{money(selectedTotal)}</dd></div>
+          </dl>
+          <p className="price-disclaimer">實際費用依現場、個人消費與交通狀況為準。</p>
+          <div className="detail-actions">
+            <a className="primary-link" href={selected.mapUrl} target="_blank" rel="noreferrer">開啟路線地圖 ↗</a>
+            <a className="source-link" href={selected.sourceUrl} target="_blank" rel="noreferrer">查官方資料 ↗</a>
+          </div>
+        </aside>
+      </section>
+
+      <section className="rain-plan">
+        <div>
+          <p className="eyebrow">風太大，雨突然來？</p>
+          <h2>雨天就把路線收進城裡。</h2>
+        </div>
+        <p>舊城散步與新竹公園兩條路線都有室內節點。若雨勢變大，直接縮成影像博物館、美術館、玻璃工藝博物館三選一，再用一頓飯收尾。</p>
+        <button onClick={() => { setWeather("rain"); setPace("half"); setSelectedId("old-town"); }}>
+          套用雨天條件
+        </button>
+      </section>
+
+      <footer>
+        <div className="footer-brand"><span>風</span><strong>週末風向</strong></div>
+        <p>票價、班次與開放時間可能臨時調整，出發前請再點選各路線的官方資料確認。</p>
+        <a href="#top">回到上方 ↑</a>
+      </footer>
+    </main>
+  );
+}
