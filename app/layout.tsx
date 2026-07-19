@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   description: "依預算、交通、天氣與時間，挑一條適合你的新竹週末路線。",
   openGraph: {
     title: "沿著風，選一條路。",
-    description: "6 條新竹週末路線，含行程、交通與每人預算。",
+    description: "10 條新竹週末路線，含行程、交通與每人預算。",
     type: "website",
     locale: "zh_TW",
     url: siteUrl,

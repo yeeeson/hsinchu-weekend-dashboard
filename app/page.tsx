@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { filterRoutes, routeCost } from "@/lib/route-planner.mjs";
 
 type Transport = "public" | "car" | "scooter";
 type Weather = "any" | "sunny" | "rain";
@@ -333,35 +334,24 @@ const transportLabels: Record<Transport, string> = {
   scooter: "機車",
 };
 
-function routeCost(route: RoutePlan, transport: Transport, travelers: number) {
-  const shared = transport === "public" ? route.costs.public : Math.ceil(route.costs[transport] / travelers);
-  return route.costs.ticket + route.costs.food + route.costs.activity + shared;
-}
-
 function money(value: number) {
   return `NT$${value.toLocaleString("zh-TW")}`;
 }
 
 export default function Home() {
   const [transport, setTransport] = useState<Transport>("public");
-  const [budget, setBudget] = useState(700);
+  const [budget, setBudget] = useState(1000);
   const [weather, setWeather] = useState<Weather>("any");
   const [pace, setPace] = useState<Pace>("any");
   const [travelers, setTravelers] = useState(2);
   const [selectedId, setSelectedId] = useState("neiwan");
 
   const filtered = useMemo(
-    () =>
-      routes.filter((route) => {
-        const withinBudget = routeCost(route, transport, travelers) <= budget;
-        const weatherMatch = weather === "any" || route.weather.includes(weather);
-        const paceMatch = pace === "any" || route.pace === pace;
-        return withinBudget && weatherMatch && paceMatch;
-      }),
+    () => filterRoutes(routes, { transport, budget, weather, pace, travelers }),
     [transport, budget, weather, pace, travelers],
   );
 
-  const selected = routes.find((route) => route.id === selectedId) ?? routes[0];
+  const selected = filtered.find((route) => route.id === selectedId) ?? filtered[0] ?? routes[0];
   const selectedTotal = routeCost(selected, transport, travelers);
   const selectedTransportCost =
     transport === "public" ? selected.costs.public : Math.ceil(selected.costs[transport] / travelers);
@@ -406,10 +396,10 @@ export default function Home() {
           <div className="road road-b" />
           <div className="road road-c" />
           <span className="map-caption">風城週末圖譜</span>
-          {routes.map((route, index) => (
+          {filtered.map((route) => (
             <button
               key={route.id}
-              className={`map-node node-${index + 1} ${selectedId === route.id ? "active" : ""}`}
+              className={`map-node node-${Number.parseInt(route.number, 10)} ${selected.id === route.id ? "active" : ""}`}
               style={{ "--route-color": route.color } as React.CSSProperties}
               onClick={() => setSelectedId(route.id)}
               aria-label={`選擇${route.region}：${route.title}`}
@@ -504,10 +494,10 @@ export default function Home() {
               return (
                 <button
                   key={route.id}
-                  className={`route-card ${selectedId === route.id ? "active" : ""}`}
+                  className={`route-card ${selected.id === route.id ? "active" : ""}`}
                   onClick={() => setSelectedId(route.id)}
                   style={{ "--route-color": route.color } as React.CSSProperties}
-                  aria-pressed={selectedId === route.id}
+                  aria-pressed={selected.id === route.id}
                 >
                   <div className="route-card-top">
                     <span className="route-number">{route.number}</span>
