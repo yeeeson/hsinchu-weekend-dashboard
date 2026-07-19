@@ -19,6 +19,9 @@ export type Restaurant = {
   parking: string;
   reviewLabel?: string;
   reviewUrl?: string;
+  isNearbyRecommendation?: boolean;
+  nearbyForRegion?: RestaurantRegion;
+  nearbyTravelLabel?: string;
   sourceLabel: string;
   sourceUrl: string;
   mapUrl: string;

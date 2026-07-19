@@ -3,15 +3,16 @@ import test from "node:test";
 import {
   filterRestaurants,
   restaurantCategories,
+  restaurantPriceTiers,
   restaurantRegions,
   restaurants,
 } from "../lib/restaurant-planner.mjs";
 
 test("restaurant catalog keeps every target area and expands the complete catalog", () => {
-  assert.equal(restaurants.length, 38);
+  assert.equal(restaurants.length, 46);
   assert.deepEqual(
     Object.fromEntries(restaurantRegions.slice(1).map(({ id }) => [id, restaurants.filter((item) => item.region === id).length])),
-    { city: 17, zhubei: 8, zhudong: 5, guanpu: 8 },
+    { city: 19, zhubei: 10, zhudong: 8, guanpu: 9 },
   );
   assert.equal(new Set(restaurants.map(({ id }) => id)).size, restaurants.length, "restaurant ids must be unique");
 });
@@ -45,7 +46,7 @@ test("requested and new cuisine categories are represented", () => {
   }
 });
 
-test("every cuisine and price-tier combination keeps at least two choices", () => {
+test("every cuisine and price-tier combination keeps at least three base choices", () => {
   const categories = restaurantCategories.filter(({ id }) => id !== "all");
   const priceTiers = ["value", "mid", "premium"];
 
@@ -53,7 +54,7 @@ test("every cuisine and price-tier combination keeps at least two choices", () =
     for (const priceTier of priceTiers) {
       const matches = filterRestaurants(restaurants, { category: category.id, priceTier });
       assert.ok(
-        matches.length >= 2,
+        matches.length >= 3,
         `${category.label} × ${priceTier} only has ${matches.length} restaurant(s)`,
       );
       assert.ok(matches.every(({ tags }) => tags.includes(category.id)));
@@ -62,17 +63,60 @@ test("every cuisine and price-tier combination keeps at least two choices", () =
   }
 });
 
-test("Guanpu offers two or three reviewed choices in every price tier", () => {
+test("Guanpu offers three choices in every price tier and keeps its reviewed shortlist", () => {
   const guanpuRestaurants = restaurants.filter(({ region }) => region === "guanpu");
   const counts = Object.fromEntries(
     ["value", "mid", "premium"].map((tier) => [tier, guanpuRestaurants.filter(({ priceTier }) => priceTier === tier).length]),
   );
 
-  assert.deepEqual(counts, { value: 2, mid: 3, premium: 3 });
-  for (const restaurant of guanpuRestaurants) {
+  assert.deepEqual(counts, { value: 3, mid: 3, premium: 3 });
+  const reviewedRestaurants = guanpuRestaurants.filter(({ reviewLabel }) => reviewLabel);
+  assert.equal(reviewedRestaurants.length, 8);
+  for (const restaurant of reviewedRestaurants) {
     assert.ok(restaurant.reviewLabel, `${restaurant.id} needs a review snapshot`);
     assert.equal(new URL(restaurant.reviewUrl).protocol, "https:");
   }
+});
+
+test("all 84 region, cuisine, and price combinations return exactly three choices", () => {
+  const regions = restaurantRegions.filter(({ id }) => id !== "all");
+  const categories = restaurantCategories.filter(({ id }) => id !== "all");
+  const priceTiers = restaurantPriceTiers.filter(({ id }) => id !== "all");
+  let checkedCombinations = 0;
+
+  for (const region of regions) {
+    for (const category of categories) {
+      for (const priceTier of priceTiers) {
+        const matches = filterRestaurants(restaurants, {
+          region: region.id,
+          category: category.id,
+          priceTier: priceTier.id,
+        });
+        const label = `${region.label} × ${category.label} × ${priceTier.label}`;
+
+        assert.equal(matches.length, 3, `${label} must return exactly three choices`);
+        assert.ok(matches.every(({ tags }) => tags.includes(category.id)), `${label} has a wrong category`);
+        assert.ok(matches.every((restaurant) => restaurant.priceTier === priceTier.id), `${label} has a wrong price tier`);
+
+        let nearbySeen = false;
+        for (const restaurant of matches) {
+          if (restaurant.isNearbyRecommendation) {
+            nearbySeen = true;
+            assert.notEqual(restaurant.region, region.id, `${label} marked a local restaurant as nearby`);
+            assert.equal(restaurant.nearbyForRegion, region.id);
+            assert.match(restaurant.nearbyTravelLabel, /離峰約/);
+          } else {
+            assert.equal(nearbySeen, false, `${label} must place local choices before nearby choices`);
+            assert.equal(restaurant.region, region.id, `${label} has an unlabelled nearby restaurant`);
+          }
+        }
+
+        checkedCombinations += 1;
+      }
+    }
+  }
+
+  assert.equal(checkedCombinations, 84);
 });
 
 test("combined restaurant filters return only matching entries", () => {
@@ -82,7 +126,11 @@ test("combined restaurant filters return only matching entries", () => {
     meal: "late",
     priceTier: "premium",
   });
-  assert.deepEqual(cityLateJapanese.map(({ id }) => id), ["city-sishi-skewers"]);
+  assert.deepEqual(
+    cityLateJapanese.map(({ id }) => id),
+    ["city-sishi-skewers", "guanpu-abv-japanese", "zhubei-sishi-skewers"],
+  );
+  assert.equal(cityLateJapanese.filter(({ isNearbyRecommendation }) => isNearbyRecommendation).length, 2);
 
   const zhudongSnacks = filterRestaurants(restaurants, {
     region: "zhudong",
@@ -94,9 +142,12 @@ test("combined restaurant filters return only matching entries", () => {
     ["zhudong-huangji", "zhudong-chenji-noodles", "zhudong-zhuangji-beef-noodles"],
   );
 
-  assert.equal(filterRestaurants(restaurants, { region: "zhudong", category: "japanese" }).length, 0);
+  assert.deepEqual(
+    filterRestaurants(restaurants, { region: "zhudong", category: "japanese" }).map(({ id }) => id),
+    ["zhudong-kuairou-curry"],
+  );
   assert.deepEqual(
     filterRestaurants(restaurants, { region: "guanpu", category: "indian", priceTier: "premium" }).map(({ id }) => id),
-    ["guanpu-chillies"],
+    ["guanpu-chillies", "city-baan-phadthai", "zhubei-siammore"],
   );
 });

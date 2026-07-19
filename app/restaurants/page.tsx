@@ -32,6 +32,8 @@ export default function RestaurantsPage() {
     () => filterRestaurants(restaurants, { region, category, meal, priceTier }),
     [region, category, meal, priceTier],
   );
+  const usesThreeWayCoverage = region !== "all" && category !== "all" && priceTier !== "all";
+  const nearbyCount = visibleRestaurants.filter(({ isNearbyRecommendation }) => isNearbyRecommendation).length;
 
   const resetFilters = () => {
     setRegion("all");
@@ -77,8 +79,8 @@ export default function RestaurantsPage() {
         <div className="restaurant-stats" aria-label="餐廳資料摘要">
           <div><strong>{restaurants.length}</strong><span>間餐廳</span></div>
           <div><strong>{String(restaurantRegions.length - 1).padStart(2, "0")}</strong><span>個常用地區</span></div>
-          <div><strong>21</strong><span>組合全覆蓋</span></div>
-          <p>每個料理類型 × 每段價位帶至少 2 間；價位為每人概估，評分為查核當下的第三方平台快照。</p>
+          <div><strong>84</strong><span>組合各 3 間</span></div>
+          <p>地區 × 料理類型 × 價位共 84 組；同區優先，不足時以鄰近區域補足 3 間，並標示實際地區與離峰車程。</p>
         </div>
       </section>
 
@@ -175,6 +177,14 @@ export default function RestaurantsPage() {
           </button>
         </div>
 
+        {usesThreeWayCoverage ? (
+          <p className="restaurant-coverage-note" role="status">
+            本組固定提供 3 間：同區餐廳優先
+            {nearbyCount > 0 ? `，另有 ${nearbyCount} 間鄰近推薦補足選擇` : "，不需跨區補位"}。
+            車程為離峰概估，尖峰時段可能更久。
+          </p>
+        ) : null}
+
         {visibleRestaurants.length > 0 ? (
           <div className="restaurant-grid">
             {visibleRestaurants.map((restaurant, index) => (
@@ -187,6 +197,11 @@ export default function RestaurantsPage() {
                   <span className="restaurant-number">{String(index + 1).padStart(2, "0")}</span>
                   <span className="restaurant-region">{restaurant.regionLabel}</span>
                 </div>
+                {restaurant.isNearbyRecommendation ? (
+                  <p className="restaurant-nearby">
+                    <b>鄰近推薦</b><span>{restaurant.nearbyTravelLabel}</span>
+                  </p>
+                ) : null}
                 <div className="restaurant-card-copy">
                   <div className="restaurant-tags">
                     {restaurant.tags.map((tag) => <span key={tag}>{restaurantTagLabels[tag]}</span>)}
