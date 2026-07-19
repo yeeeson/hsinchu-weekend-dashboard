@@ -93,3 +93,17 @@ test("dashboard route data and both route views stay in sync", async () => {
     assert.match(css, new RegExp(`\\.node-${number}\\s*\\{`), `missing map position for route ${number}`);
   }
 });
+
+test("coastal routes stay on the west side of the concept map", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  for (const number of [3, 13]) {
+    const rules = [...css.matchAll(new RegExp(`\\.node-${number}\\s*\\{([^}]*)\\}`, "g"))].map((match) => match[1]);
+    assert.ok(rules.length > 0, `missing map position for coastal route ${number}`);
+
+    for (const rule of rules) {
+      assert.match(rule, /\bleft\s*:/, `coastal route ${number} must be anchored from the west side`);
+      assert.doesNotMatch(rule, /\bright\s*:/, `coastal route ${number} must not be anchored from the east side`);
+    }
+  }
+});

@@ -317,7 +317,7 @@ a {
 .node-10 { left: 27%; top: 17%; }
 .node-11 { left: 5%; top: 52%; }
 .node-12 { left: 43%; top: 20%; }
-.node-13 { right: 5%; top: 67%; flex-direction: row-reverse; }
+.node-13 { left: 4%; top: 66%; }
 .node-14 { left: 43%; bottom: 8%; }
 
 .compass {
@@ -1302,7 +1302,7 @@ footer > a { font-size: 12px; text-decoration: none; }
   .node-10 { left: 24%; }
   .node-11 { left: 4%; top: 55%; }
   .node-12 { left: 50%; top: 18%; }
-  .node-13 { right: 4%; top: 66%; }
+  .node-13 { left: 3%; top: 66%; }
   .node-14 { left: 48%; bottom: 6%; }
   .map-caption { font-size: 17px; }
   .section-heading { align-items: start; flex-direction: column; }
