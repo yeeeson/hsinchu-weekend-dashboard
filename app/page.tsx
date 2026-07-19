@@ -209,6 +209,122 @@ const routes: RoutePlan[] = [
     sourceUrl: "https://www.green-world.com.tw/ticket.php",
     mapUrl: "https://www.google.com/maps/dir/?api=1&destination=綠世界生態農場",
   },
+  {
+    id: "zhubei-liujia",
+    number: "07",
+    title: "竹北高鐵聚落散步",
+    region: "竹北・六家",
+    kicker: "去趣靈感・高鐵到站就能走",
+    summary: "從六家水圳與商場慢慢走進新瓦屋，再到老聚落看問禮堂，把竹北的新城與客家老屋排在同一天。",
+    duration: "5–6 小時",
+    pace: "half",
+    distance: "步行約 5.5 km",
+    weather: ["sunny"],
+    moods: ["客庄", "散步", "甜點"],
+    color: "#7b6ba8",
+    costs: { ticket: 0, food: 350, activity: 0, public: 60, car: 180, scooter: 80 },
+    transport: {
+      public: "新竹站搭六家線至六家站，沿線步行；往返車資預留 NT$60。",
+      car: "高鐵特區停車後步行串連，假日預留停車 NT$180／車。",
+      scooter: "各景點周邊都有移動空間，仍請找合法機車格；估 NT$80／車。",
+    },
+    stops: [
+      { time: "09:30", name: "水圳森林公園", hours: "戶外開放空間", note: "先走水圳與綠地，上午日照比較舒服。" },
+      { time: "11:00", name: "6+PLAZA 廣場", hours: "每日 11:00–21:30", note: "吃午餐或買甜點，也能當作臨時避雨點。" },
+      { time: "13:00", name: "新瓦屋客家文化保存區", hours: "服務台每日 08:00–20:00・店家各異", note: "看老屋、水田與創藝店家，不用每間都逛。" },
+      { time: "15:30", name: "竹北問禮堂與六家古厝", hours: "戶外聚落・問禮堂依公告", note: "以聚落外觀散策收尾，問禮堂整修與預約狀態需先確認。" },
+    ],
+    sourceLabel: "去趣公開行程｜新竹高鐵一日遊",
+    sourceUrl: "https://www.chictrip.com.tw/?action=preView&preViewTravelId=60b7bd6a-7f1d-4ecc-848f-bdaa984f7495",
+    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=水圳森林公園&destination=竹北問禮堂&waypoints=6%2BPLAZA廣場%7C新瓦屋客家文化保存區&travelmode=walking",
+  },
+  {
+    id: "neiwan-comic",
+    number: "08",
+    title: "內灣漫畫老時光",
+    region: "內灣",
+    kicker: "去趣靈感・同一山城另一玩法",
+    summary: "同樣搭內灣線，這次把重點從吊橋轉向漫畫、老戲院與客家午餐，適合想慢慢看故事的人。",
+    duration: "6–7 小時",
+    pace: "full",
+    distance: "步行約 3.5 km",
+    weather: ["sunny", "rain"],
+    moods: ["漫畫", "鐵道", "懷舊"],
+    color: "#c06a87",
+    costs: { ticket: 0, food: 450, activity: 0, public: 95, car: 320, scooter: 160 },
+    transport: {
+      public: "新竹站搭內灣線，一日週遊券全票 NT$95；全程可步行。",
+      car: "假日內灣停車較滿，建議 10:00 前抵達；估油資與停車 NT$320／車。",
+      scooter: "台 3 線轉縣道 120 進內灣，午後留意山區陣雨；估 NT$160／車。",
+    },
+    stops: [
+      { time: "09:40", name: "內灣車站", hours: "依臺鐵班次", note: "下車先確認回程，再沿老街方向慢慢走。" },
+      { time: "10:00", name: "內灣老街", hours: "店家約 10:00–18:00", note: "早一點逛比較舒服，先吃小點但別一次吃飽。" },
+      { time: "11:30", name: "內灣戲院與客家午餐", hours: "餐廳依店家公告", note: "把老戲院建築與午餐排在同一站，預算抓每人 NT$450。" },
+      { time: "14:00", name: "劉興欽漫畫教育博物館", hours: "週三至週一 09:00–16:00・週二休館", note: "免費參觀，保留一段時間看漫畫與發明作品。" },
+    ],
+    sourceLabel: "去趣公開行程｜內灣漫畫與手作",
+    sourceUrl: "https://www.chictrip.com.tw/?action=preView&preViewTravelId=15d64ab6-dc69-4760-95c2-d35ab2a642a2",
+    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=內灣車站&destination=劉興欽漫畫教育博物館&waypoints=內灣老街%7C內灣戲院&travelmode=walking",
+  },
+  {
+    id: "hukou-dashanbei",
+    number: "09",
+    title: "湖口老街與大山背",
+    region: "湖口・橫山",
+    kicker: "去趣靈感・老街接森林",
+    summary: "上午看湖口紅磚街屋，午後轉進大山背的古道與山林；景點跨度較大，最適合開車或機車。",
+    duration: "7–8 小時",
+    pace: "full",
+    distance: "步行約 5 km・車程約 45 km",
+    weather: ["sunny"],
+    moods: ["古蹟", "森林", "健走"],
+    color: "#6f854e",
+    costs: { ticket: 0, food: 350, activity: 0, public: 520, car: 320, scooter: 160 },
+    transport: {
+      public: "臺鐵到湖口後需以計程車往返大山背，交通預留約 NT$520／人。",
+      car: "湖口老街停車後再開往大山背，山路不寬；估油資與停車 NT$320／車。",
+      scooter: "路線彈性最高，但古道路段午後易起霧或下雨；估 NT$160／車。",
+    },
+    stops: [
+      { time: "09:30", name: "湖口老街", hours: "週三至週一約 10:00–17:00", note: "先看紅磚拱廊與老街立面，店家尚未全開也能散步。" },
+      { time: "11:30", name: "老街客家午餐", hours: "依店家營業", note: "午餐後再上山，避免山區臨時找不到餐點。" },
+      { time: "13:30", name: "大山背人文生態館", hours: "館舍依最新公告", note: "先在館舍周邊了解聚落，再依天候決定步道長度。" },
+      { time: "15:00", name: "騎龍古道", hours: "戶外步道・建議日落前離開", note: "石階濕滑時縮短路線，穿止滑鞋比趕里程重要。" },
+    ],
+    sourceLabel: "去趣公開行程｜森遊竹縣古道路線",
+    sourceUrl: "https://www.chictrip.com.tw/?action=preView&preViewTravelId=e1b84ba9-d3b0-4110-8950-1d5a544f0861",
+    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=湖口老街&destination=騎龍古道&waypoints=大山背人文生態館",
+  },
+  {
+    id: "city-art-food",
+    number: "10",
+    title: "巨城到東門夜食",
+    region: "新竹市區",
+    kicker: "去趣靈感・雨天吃玩線",
+    summary: "從巨城吃午餐、逛室內空間，再走到美術館與東門市場，最後用一頓燒肉把行程拉到晚上。",
+    duration: "7–8 小時",
+    pace: "full",
+    distance: "步行約 4 km",
+    weather: ["sunny", "rain"],
+    moods: ["美食", "展覽", "逛街"],
+    color: "#a85f4c",
+    costs: { ticket: 0, food: 800, activity: 0, public: 30, car: 180, scooter: 60 },
+    transport: {
+      public: "新竹車站搭市區公車到巨城，之後步行往市區；預留公車 NT$30。",
+      car: "建議停巨城或市區停車場後改步行，避免傍晚反覆找位；估 NT$180／車。",
+      scooter: "中央路與東門市場周邊找合法機車格；估油資與停車 NT$60／車。",
+    },
+    stops: [
+      { time: "11:00", name: "Big City 遠東巨城", hours: "週日至四 11:00–21:30・週五六至 22:00", note: "先吃午餐再逛室內樓層，雨大時可多留一小時。" },
+      { time: "14:00", name: "新竹市美術館", hours: "週二至週日 09:00–17:00", note: "免費參觀，週一與民俗節日休館。" },
+      { time: "15:30", name: "東門市場與周邊小吃", hours: "市場全天開放・店家各自營業", note: "先吃一份小點，保留晚餐空間。" },
+      { time: "17:30", name: "東門燒肉晚餐", hours: "依店家公告・建議先訂位", note: "這條路線的主餐，餐費先抓每人約 NT$800。" },
+    ],
+    sourceLabel: "去趣編輯部公開行程｜新竹燒肉一日遊",
+    sourceUrl: "https://www.chictrip.com.tw/?action=preView&preViewTravelId=545bff6c-cde0-4390-8698-70c1f70677b8",
+    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Big%20City遠東巨城購物中心&destination=東門燒肉霸&waypoints=新竹市美術館%7C東門市場&travelmode=walking",
+  },
 ];
 
 const transportLabels: Record<Transport, string> = {
@@ -275,7 +391,7 @@ export default function Home() {
           <p className="eyebrow">不必先知道自己想去哪裡</p>
           <h1>沿著風，<br />選一條路。</h1>
           <p className="hero-lede">
-            從新竹出發的 6 種週末提案。先選預算與交通方式，再讓今天的體力替你做最後決定。
+            從新竹出發的 10 種週末提案。先選預算與交通方式，再讓今天的體力替你做最後決定。
           </p>
           <button className="surprise-button" onClick={surpriseMe}>
             <span aria-hidden="true">↗</span> 幫我挑一條
@@ -479,7 +595,7 @@ export default function Home() {
           <p className="price-disclaimer">實際費用依現場、個人消費與交通狀況為準。</p>
           <div className="detail-actions">
             <a className="primary-link" href={selected.mapUrl} target="_blank" rel="noreferrer">開啟路線地圖 ↗</a>
-            <a className="source-link" href={selected.sourceUrl} target="_blank" rel="noreferrer">查官方資料 ↗</a>
+            <a className="source-link" href={selected.sourceUrl} target="_blank" rel="noreferrer">{selected.sourceLabel} ↗</a>
           </div>
         </aside>
       </section>
