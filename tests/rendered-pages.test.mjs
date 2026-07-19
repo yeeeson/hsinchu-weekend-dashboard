@@ -29,3 +29,26 @@ test("the generated map and route-card section render the same catalog", async (
   assert.match(html, /南寮南堤合法海釣/);
   assert.match(html, /香山丘陵與長興熱炒/);
 });
+
+test("the generated restaurant page renders the full catalog and home navigation", async () => {
+  const [homeHtml, restaurantHtml] = await Promise.all([
+    readFile(new URL("../out/index.html", import.meta.url), "utf8"),
+    readFile(new URL("../out/restaurants/index.html", import.meta.url), "utf8"),
+  ]);
+  const restaurantCards = restaurantHtml.match(/class="restaurant-card(?:\s[^\"]*)?"/g) ?? [];
+
+  assert.equal(restaurantCards.length, 15, "the default restaurant page must render the complete catalog");
+  assert.match(homeHtml, /href="\/hsinchu-weekend-dashboard\/restaurants\/"/);
+  assert.match(restaurantHtml, /今天，/);
+  assert.match(restaurantHtml, /新竹市區/);
+  assert.match(restaurantHtml, /竹北/);
+  assert.match(restaurantHtml, /竹東/);
+  assert.match(restaurantHtml, /日式/);
+  assert.match(restaurantHtml, /小吃/);
+  assert.match(restaurantHtml, /宵夜/);
+  assert.match(restaurantHtml, /廟口鴨香飯/);
+  assert.match(restaurantHtml, /十一街麵食館/);
+  assert.match(restaurantHtml, /黃記粄條商行/);
+  assert.match(restaurantHtml, /營業時間/);
+  assert.match(restaurantHtml, /Google Maps/);
+});

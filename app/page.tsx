@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { filterRoutes, routeCost } from "@/lib/route-planner.mjs";
 
@@ -486,9 +487,13 @@ export default function Home() {
           <span className="brand-mark" aria-hidden="true">風</span>
           <span>週末風向</span>
         </a>
-        <div className="header-meta">
-          <span>HSINCHU · WEEKEND 01</span>
-          <span className="freshness"><i />資料查核 2026.07.19</span>
+        <div className="header-actions">
+          <span className="header-link active" aria-current="page">找路線</span>
+          <Link className="header-link" href="/restaurants">找餐廳</Link>
+          <div className="header-meta">
+            <span>HSINCHU · WEEKEND 01</span>
+            <span className="freshness"><i />資料查核 2026.07.19</span>
+          </div>
         </div>
       </header>
 

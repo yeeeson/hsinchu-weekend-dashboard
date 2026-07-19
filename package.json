@@ -10,7 +10,7 @@
     "build": "vinext build",
     "build:pages": "node scripts/build-pages.mjs",
     "start": "vinext start",
-    "test": "node --test tests/route-planner.test.mjs",
+    "test": "node --test tests/route-planner.test.mjs tests/restaurant-planner.test.mjs",
     "test:rendered": "node --test tests/rendered-pages.test.mjs",
     "test:regression": "npm test && npm run build:pages && npm run test:rendered",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
